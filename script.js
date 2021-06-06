@@ -41,7 +41,22 @@ const game = (() => {
 		};
 	})();
 
+	const board = (() => {
+		const renderCards = (hand, to) => {
+			deck = document.querySelector(`.${to}`);
+			hand.forEach(item => {
+				card = document.createElement('img');
+				card.src = item.path;
+
+				deck.appendChild(card);
+			});
+		};
+
+		return { renderCards };
+	})();
+
 	return {
 		functions,
+		board,
 	};
 })();
