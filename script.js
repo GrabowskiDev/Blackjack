@@ -1,5 +1,4 @@
 const game = (() => {
-	//All games functions
 	const functions = (() => {
 		const shuffle = unshuffled => {
 			//shuffle
@@ -7,18 +6,22 @@ const game = (() => {
 			return shuffled;
 		};
 
-		const checkForBust = hand => {
+		const getSum = hand => {
 			let aceCount = 0;
 			let sum = 0;
 
+			//add sum of each card
 			hand.forEach(card => {
 				sum += card.value;
 				if (card.value === 11) aceCount++;
 			});
 
+			//Need to change ace value from 11 to 1 when over 21
 			if (sum > 21 && aceCount > 0) {
 				keepGoing = true;
 				i = aceCount;
+
+				//Changing only minimal number of 11 to 1
 				while (keepGoing) {
 					sum -= 10;
 
@@ -29,9 +32,12 @@ const game = (() => {
 			return sum;
 		};
 
+		const isBusted = value => (value > 21 ? true : false);
+
 		return {
 			shuffle,
-			checkForBust,
+			getSum,
+			isBusted,
 		};
 	})();
 
