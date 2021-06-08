@@ -37,8 +37,8 @@ const game = (() => {
 
 			//Need to change ace value from 11 to 1 when over 21
 			if (sum > 21 && aceCount > 0) {
-				keepGoing = true;
-				i = aceCount;
+				let keepGoing = true;
+				let i = aceCount;
 
 				//Changing only minimal number of 11 to 1
 				while (keepGoing) {
@@ -51,7 +51,14 @@ const game = (() => {
 			return sum;
 		};
 
-		const isBusted = value => (value > 21 ? true : false);
+		const isBusted = hand => {
+			let sum = getSum(hand);
+
+			if (sum > 21) {
+				mainText.innerHTML = 'Busted!';
+				board.disableButtons();
+			}
+		};
 
 		return {
 			shuffle,
@@ -65,16 +72,20 @@ const game = (() => {
 	const board = (() => {
 		const renderPlayerCards = () => {
 			const deck = document.querySelector('.player');
+			deck.innerHTML = '';
 			playerHand.forEach(card => {
 				const img = document.createElement('img');
 				img.src = card.path;
 
 				deck.appendChild(img);
 			});
+
+			renderPlayerValue();
 		};
 
 		const renderDealerCards = () => {
 			const deck = document.querySelector('.dealer');
+			deck.innerHTML = '';
 			dealerHand.forEach(card => {
 				const img = document.createElement('img');
 				if (dealerHand.indexOf(card) == 0 && dealerHide)
@@ -85,7 +96,30 @@ const game = (() => {
 			});
 		};
 
-		return { renderPlayerCards, renderDealerCards };
+		const renderPlayerValue = () => {
+			let value = functions.getSum(playerHand);
+			playerValue.innerHTML = `Value: ${value}`;
+		};
+
+		const renderDealerValue = () => {
+			let value = functions.getSum(dealerHand);
+			dealerValue.innerHTML = `Value: ${value}`;
+		};
+
+		const disableButtons = () => {
+			hitButton.disabled = true;
+			standButton.disabled = true;
+			doubleButton.disabled = true;
+			splitButton.disabled = true;
+		};
+
+		return {
+			renderPlayerCards,
+			renderDealerCards,
+			renderPlayerValue,
+			renderDealerValue,
+			disableButtons,
+		};
 	})();
 
 	//Global script
@@ -115,8 +149,35 @@ const game = (() => {
 
 	let dealerHide = true;
 
+	//Query selectors
+	const hitButton = document.querySelector('#hit');
+	const standButton = document.querySelector('#stand');
+	const doubleButton = document.querySelector('#double');
+	const splitButton = document.querySelector('#split');
+
+	const playerValue = document.querySelector('.playerValue');
+	const dealerValue = document.querySelector('.dealerValue');
+	const mainText = document.querySelector('.text');
+
 	//On pageload
 	global.start();
+
+	//Event listeners (Button clicks)
+	hitButton.addEventListener('click', () => {
+		functions.draw(playerHand, deck);
+		board.renderPlayerCards();
+
+		functions.isBusted(playerHand);
+	});
+
+	standButton.addEventListener('click', () => {
+		board.disableButtons();
+
+		dealerHide = false;
+		board.renderDealerCards();
+
+		board.renderDealerValue();
+	});
 
 	return {
 		functions,
