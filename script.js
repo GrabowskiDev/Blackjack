@@ -177,6 +177,39 @@ const game = (() => {
 		board.renderDealerCards();
 
 		board.renderDealerValue();
+
+		let keepGoing = true;
+		while (keepGoing) {
+			let dealerSum = functions.getSum(dealerHand);
+
+			//Check for blackjack
+			if (dealerSum === 21) {
+				mainText.innerHTML = 'Blackjack! Dealer won!';
+				keepGoing = false;
+			}
+
+			//Check if dealer needs to draw a card
+			if (dealerSum < 17) {
+				functions.draw(dealerHand, deck);
+				board.renderDealerCards();
+				board.renderDealerValue();
+			}
+
+			//Checking who have better value
+			if (dealerSum >= 17) {
+				keepGoing = false;
+
+				if (dealerSum > 21) {
+					mainText.innerHTML = 'Dealer is busted! You won!';
+				} else if (dealerSum > functions.getSum(playerHand)) {
+					mainText.innerHTML = 'Dealer won!';
+				} else if (dealerSum < functions.getSum(playerHand)) {
+					mainText.innerHTML = 'You won!';
+				} else {
+					mainText.innerHTML = 'Draw!';
+				}
+			}
+		}
 	});
 
 	return {
