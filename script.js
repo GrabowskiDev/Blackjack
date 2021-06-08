@@ -1,11 +1,28 @@
 import { cards, cardsBack } from './cards.js';
 
+//Global functions
+function between(min, max) {
+	return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+//Game script
 const game = (() => {
 	const functions = (() => {
-		const shuffle = unshuffled => {
+		const shuffle = a => {
 			//shuffle
+			for (let i = a.length - 1; i > 0; i--) {
+				const j = Math.floor(Math.random() * (i + 1));
+				[a[i], a[j]] = [a[j], a[i]];
+			}
+			return a;
+		};
 
-			return shuffled;
+		const draw = (hand, from) => {
+			let i = between(0, from.length - 1);
+			let card = from[i];
+			from.splice(i, 1);
+
+			hand.push(card);
 		};
 
 		const getSum = hand => {
@@ -38,15 +55,17 @@ const game = (() => {
 
 		return {
 			shuffle,
+			draw,
 			getSum,
 			isBusted,
 		};
 	})();
 
+	//Board script (Visuals)
 	const board = (() => {
-		const renderPlayerCards = hand => {
+		const renderPlayerCards = () => {
 			const deck = document.querySelector('.player');
-			hand.forEach(card => {
+			playerHand.forEach(card => {
 				const img = document.createElement('img');
 				img.src = card.path;
 
@@ -54,12 +73,34 @@ const game = (() => {
 			});
 		};
 
-		return { renderPlayerCards };
+		const renderDealerCards = () => {
+			const deck = document.querySelector('.dealer');
+			dealerHand.forEach(card => {
+				const img = document.createElement('img');
+				if (dealerHand.indexOf(card) == 0 && dealerHide)
+					img.src = cardsBack.path;
+				else img.src = card.path;
+
+				deck.appendChild(img);
+			});
+		};
+
+		return { renderPlayerCards, renderDealerCards };
 	})();
 
+	//Global script
 	const global = (() => {
 		const start = () => {
-			console.log('lol');
+			deck = cards.slice();
+			functions.shuffle(deck);
+
+			functions.draw(dealerHand, deck);
+			functions.draw(playerHand, deck);
+			functions.draw(dealerHand, deck);
+			functions.draw(playerHand, deck);
+
+			board.renderPlayerCards();
+			board.renderDealerCards();
 		};
 
 		return {
@@ -67,9 +108,27 @@ const game = (() => {
 		};
 	})();
 
+	//Variables and initial values
+	let deck = [];
+	let playerHand = [];
+	let dealerHand = [];
+
+	let dealerHide = true;
+
+	//On pageload
+	global.start();
+
 	return {
 		functions,
 		board,
 		global,
+		deck,
+		playerHand,
+		dealerHand,
 	};
 })();
+
+//console.log(game.functions.getSum(game.playerHand));
+
+//console.log(game.deck);
+console.log(game.dealerHand);
