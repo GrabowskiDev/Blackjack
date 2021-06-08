@@ -1,3 +1,5 @@
+import { cards, cardsBack } from './cards.js';
+
 const game = (() => {
 	const functions = (() => {
 		const shuffle = unshuffled => {
@@ -42,21 +44,32 @@ const game = (() => {
 	})();
 
 	const board = (() => {
-		const renderCards = (hand, to) => {
-			deck = document.querySelector(`.${to}`);
-			hand.forEach(item => {
-				card = document.createElement('img');
-				card.src = item.path;
+		const renderPlayerCards = hand => {
+			const deck = document.querySelector('.player');
+			hand.forEach(card => {
+				const img = document.createElement('img');
+				img.src = card.path;
 
-				deck.appendChild(card);
+				deck.appendChild(img);
 			});
 		};
 
-		return { renderCards };
+		return { renderPlayerCards };
+	})();
+
+	const global = (() => {
+		const start = () => {
+			console.log('lol');
+		};
+
+		return {
+			start,
+		};
 	})();
 
 	return {
 		functions,
 		board,
+		global,
 	};
 })();
