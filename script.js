@@ -60,11 +60,54 @@ const game = (() => {
 			}
 		};
 
+		const stand = () => {
+			board.disableButtons();
+
+			dealerHide = false;
+			board.renderDealerCards();
+
+			board.renderDealerValue();
+
+			let keepGoing = true;
+			while (keepGoing) {
+				let dealerSum = functions.getSum(dealerHand);
+
+				//Check for blackjack
+				if (dealerSum === 21) {
+					mainText.innerHTML = 'Blackjack! Dealer won!';
+					keepGoing = false;
+				}
+
+				//Check if dealer needs to draw a card
+				if (dealerSum < 17) {
+					functions.draw(dealerHand, deck);
+					board.renderDealerCards();
+					board.renderDealerValue();
+				}
+
+				//Checking who have better value
+				if (dealerSum >= 17) {
+					keepGoing = false;
+
+					if (dealerSum > 21) {
+						mainText.innerHTML = 'Dealer is busted! You won!';
+					} else if (dealerSum > functions.getSum(playerHand)) {
+						mainText.innerHTML = 'Dealer won!';
+					} else if (dealerSum < functions.getSum(playerHand)) {
+						mainText.innerHTML = 'You won!';
+					} else {
+						mainText.innerHTML = 'Draw!';
+					}
+				}
+			}
+		};
+
 		return {
 			shuffle,
 			draw,
 			getSum,
 			isBusted,
+			stand,
 		};
 	})();
 
@@ -110,7 +153,6 @@ const game = (() => {
 			hitButton.disabled = true;
 			standButton.disabled = true;
 			doubleButton.disabled = true;
-			splitButton.disabled = true;
 		};
 
 		return {
@@ -153,7 +195,6 @@ const game = (() => {
 	const hitButton = document.querySelector('#hit');
 	const standButton = document.querySelector('#stand');
 	const doubleButton = document.querySelector('#double');
-	const splitButton = document.querySelector('#split');
 
 	const playerValue = document.querySelector('.playerValue');
 	const dealerValue = document.querySelector('.dealerValue');
@@ -167,49 +208,22 @@ const game = (() => {
 		functions.draw(playerHand, deck);
 		board.renderPlayerCards();
 
+		doubleButton.disabled = true;
+
 		functions.isBusted(playerHand);
 	});
 
 	standButton.addEventListener('click', () => {
-		board.disableButtons();
+		functions.stand();
+	});
 
-		dealerHide = false;
-		board.renderDealerCards();
+	doubleButton.addEventListener('click', () => {
+		functions.draw(playerHand, deck);
+		board.renderPlayerCards();
 
-		board.renderDealerValue();
+		functions.isBusted(playerHand);
 
-		let keepGoing = true;
-		while (keepGoing) {
-			let dealerSum = functions.getSum(dealerHand);
-
-			//Check for blackjack
-			if (dealerSum === 21) {
-				mainText.innerHTML = 'Blackjack! Dealer won!';
-				keepGoing = false;
-			}
-
-			//Check if dealer needs to draw a card
-			if (dealerSum < 17) {
-				functions.draw(dealerHand, deck);
-				board.renderDealerCards();
-				board.renderDealerValue();
-			}
-
-			//Checking who have better value
-			if (dealerSum >= 17) {
-				keepGoing = false;
-
-				if (dealerSum > 21) {
-					mainText.innerHTML = 'Dealer is busted! You won!';
-				} else if (dealerSum > functions.getSum(playerHand)) {
-					mainText.innerHTML = 'Dealer won!';
-				} else if (dealerSum < functions.getSum(playerHand)) {
-					mainText.innerHTML = 'You won!';
-				} else {
-					mainText.innerHTML = 'Draw!';
-				}
-			}
-		}
+		standButton.click();
 	});
 
 	return {
