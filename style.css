@@ -17,7 +17,7 @@ body {
 
 button {
 	width: 25%;
-	height: 30%;
+	height: 45%;
 	margin: 15px;
 	font-size: 30px;
 
@@ -25,19 +25,30 @@ button {
 	color: black;
 	border: none;
 	border-radius: 20px;
+
+	transition: scale 0.1s;
 }
 
-button:hover {
+button:hover:enabled {
 	background-color: whitesmoke;
 }
 
-button:active {
+button:active:enabled {
 	scale: 90%;
+}
+
+button:disabled {
+	background-color: grey;
+	box-shadow: none;
 }
 
 .shadow {
 	box-shadow: 5px 5px 6px black, 5px -5px 6px black, -5px 5px 6px black,
 		-5px -5px 6px black;
+}
+
+.smallShadow {
+	box-shadow: 5px 5px 9px rgb(33, 33, 33);
 }
 
 .gameBoard {
