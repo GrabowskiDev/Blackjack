@@ -79,12 +79,7 @@ const game = (() => {
 			let keepGoing = true;
 			while (keepGoing) {
 				let dealerSum = functions.getSum(dealerHand);
-
-				//Check for blackjack
-				if (dealerSum === 21) {
-					mainText.innerHTML = 'Blackjack! Dealer won!';
-					keepGoing = false;
-				}
+				let playerSum = functions.getSum(playerHand);
 
 				//Check if dealer needs to draw a card
 				if (dealerSum < 17) {
@@ -93,15 +88,21 @@ const game = (() => {
 					board.renderDealerValue();
 				}
 
+				//Check for blackjack
+				if (dealerSum === 21) {
+					mainText.innerHTML = 'Blackjack! Dealer won!';
+					keepGoing = false;
+				}
+
 				//Checking who have better value
 				if (dealerSum >= 17) {
 					keepGoing = false;
 
 					if (dealerSum > 21) {
 						mainText.innerHTML = 'Dealer is busted! You won!';
-					} else if (dealerSum > functions.getSum(playerHand)) {
+					} else if (dealerSum > playerSum) {
 						mainText.innerHTML = 'Dealer won!';
-					} else if (dealerSum < functions.getSum(playerHand)) {
+					} else if (dealerSum < playerSum) {
 						mainText.innerHTML = 'You won!';
 					} else {
 						mainText.innerHTML = 'Draw!';
@@ -200,6 +201,7 @@ const game = (() => {
 
 			board.renderPlayerCards();
 			board.renderDealerCards();
+			dealerValue.innerHTML = 'Value: ?';
 
 			functions.checkForBlackjack();
 		};
@@ -258,12 +260,7 @@ const game = (() => {
 	});
 
 	return {
-		functions,
-		board,
 		global,
-		deck,
-		playerHand,
-		dealerHand,
 	};
 })();
 
