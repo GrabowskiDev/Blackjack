@@ -60,6 +60,14 @@ const game = (() => {
 			}
 		};
 
+		const checkForBlackjack = () => {
+			if (functions.getSum(playerHand) === 21) {
+				board.disableButtons();
+
+				mainText.innerHTML = 'Blackjack! You won!';
+			}
+		};
+
 		const stand = () => {
 			board.disableButtons();
 
@@ -107,6 +115,7 @@ const game = (() => {
 			draw,
 			getSum,
 			isBusted,
+			checkForBlackjack,
 			stand,
 		};
 	})();
@@ -155,18 +164,32 @@ const game = (() => {
 			doubleButton.disabled = true;
 		};
 
+		const enableButtons = () => {
+			hitButton.disabled = false;
+			standButton.disabled = false;
+			doubleButton.disabled = false;
+		};
+
 		return {
 			renderPlayerCards,
 			renderDealerCards,
 			renderPlayerValue,
 			renderDealerValue,
 			disableButtons,
+			enableButtons,
 		};
 	})();
 
 	//Global script
 	const global = (() => {
 		const start = () => {
+			board.enableButtons();
+
+			playerHand = [];
+			dealerHand = [];
+			dealerHide = true;
+			mainText.innerHTML = '';
+
 			deck = cards.slice();
 			functions.shuffle(deck);
 
@@ -177,6 +200,8 @@ const game = (() => {
 
 			board.renderPlayerCards();
 			board.renderDealerCards();
+
+			functions.checkForBlackjack();
 		};
 
 		return {
@@ -196,14 +221,20 @@ const game = (() => {
 	const standButton = document.querySelector('#stand');
 	const doubleButton = document.querySelector('#double');
 
+	const roundButton = document.querySelector('#roundButton');
+
 	const playerValue = document.querySelector('.playerValue');
 	const dealerValue = document.querySelector('.dealerValue');
 	const mainText = document.querySelector('.text');
 
 	//On pageload
-	global.start();
 
 	//Event listeners (Button clicks)
+	roundButton.addEventListener('click', () => {
+		global.start();
+		roundButton.innerHTML = 'Restart!';
+	});
+
 	hitButton.addEventListener('click', () => {
 		functions.draw(playerHand, deck);
 		board.renderPlayerCards();
